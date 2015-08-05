@@ -48,15 +48,19 @@
  */
 package org.artoolkit.ar.samples.ARSimple;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.artoolkit.ar.base.ARToolKit;
 import org.artoolkit.ar.base.rendering.ARRenderer;
 import org.artoolkit.ar.base.rendering.Cube;
 import org.artoolkit.ar.base.rendering.Pyramid;
+import org.artoolkit.ar.base.rendering.Surface;
 
 /**
- * A very simple Renderer that adds a marker and draws a cube on it.
+ * A renderer that adds a marker and draws an object on it.
  */
 public class SimpleRenderer extends ARRenderer {
 
@@ -64,7 +68,8 @@ public class SimpleRenderer extends ARRenderer {
      * Marker ID.
      */
     private int markerID = -1;
-    
+    private int markerID2 = -1;
+
     /**
      * Cube visualization.
      */
@@ -74,9 +79,11 @@ public class SimpleRenderer extends ARRenderer {
      * Pyramid visualization.
      */
     private Pyramid pyr = new Pyramid(40.0f);
-    
+
+    //private Surface sur;
     /**
      * Markers can be configured here.
+     *
      * @return true if configured properly
      */
     @Override
@@ -84,7 +91,9 @@ public class SimpleRenderer extends ARRenderer {
 
         markerID = ARToolKit.getInstance().addMarker(
                 "single;Data/patt.hiro;80");
-        if (markerID < 0) {
+        markerID2 = ARToolKit.getInstance().addMarker(
+                "single;Data/patt.kanji;80");
+        if (markerID < 0 || markerID2 < 0) {
             return false;
         }
         return true;
@@ -92,7 +101,8 @@ public class SimpleRenderer extends ARRenderer {
 
     /**
      * Override the draw function from ARRenderer.
-     * @param gl 
+     *
+     * @param gl
      */
     @Override
     public void draw(GL10 gl) {
@@ -109,10 +119,16 @@ public class SimpleRenderer extends ARRenderer {
         gl.glFrontFace(GL10.GL_CW);
 
         // If the marker is visible, apply its transformation, and draw a shape
+        if (ARToolKit.getInstance().queryMarkerVisible(markerID2)) {
+            gl.glMatrixMode(GL10.GL_MODELVIEW);
+            gl.glLoadMatrixf(ARToolKit.getInstance().
+                    queryMarkerTransformation(markerID2), 0);
+            cube.draw(gl);
+        }
         if (ARToolKit.getInstance().queryMarkerVisible(markerID)) {
             gl.glMatrixMode(GL10.GL_MODELVIEW);
-            gl.glLoadMatrixf(ARToolKit.getInstance().queryMarkerTransformation(markerID), 0);
-            //cube.draw(gl);
+            gl.glLoadMatrixf(ARToolKit.getInstance().
+                    queryMarkerTransformation(markerID), 0);
             pyr.draw(gl);
         }
 
