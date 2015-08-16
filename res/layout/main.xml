@@ -9,6 +9,16 @@
         android:id="@+id/mainLayout" 
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+    />
        
+    <Button
+        android:id="@+id/btn_send"
+        android:text="Send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+    />
+    
 </LinearLayout>

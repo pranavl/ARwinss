@@ -52,6 +52,8 @@ import org.artoolkit.ar.base.ARActivity;
 import org.artoolkit.ar.base.rendering.ARRenderer;
 import org.artoolkit.ar.samples.ARSimple.R;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 /**
@@ -59,14 +61,50 @@ import android.widget.FrameLayout;
  */
 public class ARSimple extends ARActivity {
 
+    // UI ELEMENTS =============================================================
+    /**
+     * Send button.
+     */
+    private Button sendButton;
+
+    // OBJECTS =================================================================
+    /**
+     * Thread for client.
+     */
+    Thread clientThread = null;
+    
+    // METHODS =================================================================
+    /**
+     * On create...
+     *
+     * @param savedInstanceState .
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        // Event listener to the Capture button
+        this.sendButton = (Button) findViewById(R.id.btn_send);
+        this.sendButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Send message to server
+                        clientThread = new Thread(
+                                new TCPClientThread());
+                        clientThread.start();
+
+                    }
+                }
+        );
+
     }
 
     /**
      * Provide our own SimpleRenderer.
+     *
+     * @return ARRenderer
      */
     @Override
     protected ARRenderer supplyRenderer() {
@@ -75,10 +113,23 @@ public class ARSimple extends ARActivity {
 
     /**
      * Use the FrameLayout in this Activity's UI.
+     *
+     * @return FrameLayout
      */
     @Override
     protected FrameLayout supplyFrameLayout() {
         return (FrameLayout) this.findViewById(R.id.mainLayout);
     }
 
+// THREADS =====================================================================
+    /**
+     * TCP Client class, executed in a separate thread.
+     */
+    class TCPClientThread implements Runnable {
+
+        @Override
+        public void run() {
+
+        }
+    }
 }
