@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/topLayout" 
-              android:orientation="horizontal"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/topLayout" 
+             android:orientation="horizontal"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent">
+    <TableRow>
+        <TextView  
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_IPAddress"
+            android:layout_gravity="center"
+            android:text=""
+        />
+    </TableRow>
     
-    <FrameLayout
-        android:id="@+id/mainLayout" 
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-    />
-       
-    <Button
-        android:id="@+id/btn_send"
-        android:text="Send"
-        android:layout_width="10mm"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-    />
+    <TableRow android:layout_weight="1">
+        <FrameLayout
+            android:id="@+id/viewFrame" 
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+        />
+        <Button
+            android:id="@+id/btn_send"
+            android:text="Send"
+            android:layout_width="10mm"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+        />
+    </TableRow>
     
-</LinearLayout>
+</TableLayout>
