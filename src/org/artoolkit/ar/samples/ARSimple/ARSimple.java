@@ -1,49 +1,7 @@
 /*
  *  ARSimple.java
- *  ARToolKit5
  *
- *  Disclaimer: IMPORTANT:  This Daqri software is supplied to you by Daqri
- *  LLC ("Daqri") in consideration of your agreement to the following
- *  terms, and your use, installation, modification or redistribution of
- *  this Daqri software constitutes acceptance of these terms.  If you do
- *  not agree with these terms, please do not use, install, modify or
- *  redistribute this Daqri software.
- *
- *  In consideration of your agreement to abide by the following terms, and
- *  subject to these terms, Daqri grants you a personal, non-exclusive
- *  license, under Daqri's copyrights in this original Daqri software (the
- *  "Daqri Software"), to use, reproduce, modify and redistribute the Daqri
- *  Software, with or without modifications, in source and/or binary forms;
- *  provided that if you redistribute the Daqri Software in its entirety and
- *  without modifications, you must retain this notice and the following
- *  text and disclaimers in all such redistributions of the Daqri Software.
- *  Neither the name, trademarks, service marks or logos of Daqri LLC may
- *  be used to endorse or promote products derived from the Daqri Software
- *  without specific prior written permission from Daqri.  Except as
- *  expressly stated in this notice, no other rights or licenses, express or
- *  implied, are granted by Daqri herein, including but not limited to any
- *  patent rights that may be infringed by your derivative works or by other
- *  works in which the Daqri Software may be incorporated.
- *
- *  The Daqri Software is provided by Daqri on an "AS IS" basis.  DAQRI
- *  MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- *  THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE, REGARDING THE DAQRI SOFTWARE OR ITS USE AND
- *  OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
- *
- *  IN NO EVENT SHALL DAQRI BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- *  OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *  INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- *  MODIFICATION AND/OR DISTRIBUTION OF THE DAQRI SOFTWARE, HOWEVER CAUSED
- *  AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- *  STRICT LIABILITY OR OTHERWISE, EVEN IF DAQRI HAS BEEN ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- *  Copyright 2015 Daqri, LLC.
- *  Copyright 2011-2015 ARToolworks, Inc.
- *
- *  Author(s): Julian Looser, Philip Lamb
+ *  @author Pranav Lakshminarayanan
  *
  */
 package org.artoolkit.ar.samples.ARSimple;
@@ -55,9 +13,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A very simple example of extending ARActivity to create a new AR application.
+ * Runs WINSS application.
  */
 public class ARSimple extends ARActivity {
 
@@ -67,12 +34,30 @@ public class ARSimple extends ARActivity {
      */
     private Button sendButton;
 
-    // OBJECTS =================================================================
+    // OBJECTS AND VARIABLES ===================================================
     /**
      * Thread for client.
      */
     Thread clientThread = null;
+
+    /**
+     * Thread for server.
+     */
+    Thread serverThread = null;
     
+    private ServerSocket servSock;
+
+    // MODIFY IP AND PORT HERE
+    /**
+     * IP Address of server.
+     */
+    final String SERVER_IP = "192.168.1.5";
+    
+    /**
+     * Server port.
+     */
+    final int SERVER_PORT = 8099;
+
     // METHODS =================================================================
     /**
      * On create...
@@ -84,17 +69,24 @@ public class ARSimple extends ARActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // Event listener to the Capture button
+        // Set up server socket
+        try {
+            this.servSock = new ServerSocket(this.SERVER_PORT);
+        } catch (IOException ex) {
+            sendButton.setText("Socket Error");
+        }
+        
+        // Event listener to the Send button
         this.sendButton = (Button) findViewById(R.id.btn_send);
         this.sendButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // Send message to server
-                        clientThread = new Thread(
-                                new TCPClientThread());
-                        clientThread.start();
-
+                        //clientThread = new Thread(new TCPClientThread());
+                        //clientThread.start();
+                        serverThread = new Thread(new TCPServerThread());
+                        serverThread.start();
                     }
                 }
         );
@@ -119,6 +111,7 @@ public class ARSimple extends ARActivity {
     @Override
     protected FrameLayout supplyFrameLayout() {
         return (FrameLayout) this.findViewById(R.id.mainLayout);
+
     }
 
 // THREADS =====================================================================
@@ -129,7 +122,52 @@ public class ARSimple extends ARActivity {
 
         @Override
         public void run() {
+            Socket clientSocket;
+            DataOutputStream outToServer;
+            BufferedReader inFromServer;
+            String fromServ;
+            // CONNECT TO SERVER
+            try {
+                clientSocket = new Socket(
+                        InetAddress.getByName(SERVER_IP), SERVER_PORT);
 
+                outToServer = new DataOutputStream(
+                        clientSocket.getOutputStream());
+
+                inFromServer = new BufferedReader(
+                        new InputStreamReader(clientSocket.getInputStream()));
+
+                // WRITE TO SERVER AND RECEIVE MESSAGE
+                outToServer.writeBytes("Test");
+                fromServ = inFromServer.readLine();
+                clientSocket.close();
+
+            } catch (Exception e) {
+                System.out.println("\nCONNECTION ERROR");
+            }
+        }
+    }
+
+    /**
+     * Server thread.
+     */
+    class TCPServerThread implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                Socket clntSock = servSock.accept();
+                BufferedReader inFromClient = new BufferedReader(
+                        new InputStreamReader(clntSock.getInputStream()));
+                DataOutputStream outToClient = new DataOutputStream(
+                        clntSock.getOutputStream());
+                inFromClient.readLine();
+                outToClient.writeBytes("RECEIVED");
+                outToClient.flush();
+                outToClient.close();
+            } catch (IOException ex) {
+                sendButton.setText("ERROR in ServerThread");
+            }
         }
     }
 }
