@@ -12,6 +12,13 @@
             android:layout_gravity="center"
             android:text=""
         />
+        <Button
+            android:id="@+id/btn_send"
+            android:text="Start server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+        />
     </TableRow>
     
     <TableRow android:layout_weight="1">
@@ -21,13 +28,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-        />
-        <Button
-            android:id="@+id/btn_send"
-            android:text="Send"
-            android:layout_width="10mm"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_span="3"
         />
     </TableRow>
     

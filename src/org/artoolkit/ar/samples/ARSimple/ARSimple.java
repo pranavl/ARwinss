@@ -9,7 +9,6 @@ package org.artoolkit.ar.samples.ARSimple;
 import android.net.wifi.WifiManager;
 import org.artoolkit.ar.base.ARActivity;
 import org.artoolkit.ar.base.rendering.ARRenderer;
-import org.artoolkit.ar.samples.ARSimple.R;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.view.View;
@@ -20,13 +19,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Runs WINSS application.
@@ -42,7 +37,7 @@ public class ARSimple extends ARActivity {
     /**
      * Send button.
      */
-    private Button sendButton;
+    private Button startButton;
 
     // OBJECTS AND VARIABLES ===================================================
     /**
@@ -58,11 +53,6 @@ public class ARSimple extends ARActivity {
     private ServerSocket servSock;
 
     // MODIFY IP AND PORT HERE
-    /**
-     * IP Address of server.
-     */
-    final String SERVER_IP = "192.168.1.5";
-
     /**
      * Server port.
      */
@@ -83,7 +73,7 @@ public class ARSimple extends ARActivity {
         try {
             this.servSock = new ServerSocket(this.SERVER_PORT);
         } catch (IOException ex) {
-            sendButton.setText("Socket Error");
+            startButton.setText("Socket Error");
         }
 
         // Display IP Address of device to which clients can connect
@@ -92,13 +82,13 @@ public class ARSimple extends ARActivity {
                 + getIPAddress());
 
         // Event listener to the Send button
-        this.sendButton = (Button) findViewById(R.id.btn_send);
-        this.sendButton.setOnClickListener(
+        this.startButton = (Button) findViewById(R.id.btn_send);
+        this.startButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // Start server
-                        serverThread = new Thread(new TCPServerThread());
+                        serverThread = new Thread(new OpenIGTServerThread());
                         serverThread.start();
                     }
                 }
@@ -129,52 +119,19 @@ public class ARSimple extends ARActivity {
 
     /**
      * Provide IP Address of the device.
-     * 
+     *
      * @return IP address as a String
      */
-    private String getIPAddress() {
+    protected String getIPAddress() {
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         return Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
     }
 
 // THREADS =====================================================================
     /**
-     * TCP Client class, executed in a separate thread.
-     */
-    class TCPClientThread implements Runnable {
-
-        @Override
-        public void run() {
-            Socket clientSocket;
-            DataOutputStream outToServer;
-            BufferedReader inFromServer;
-            String fromServ;
-            // CONNECT TO SERVER
-            try {
-                clientSocket = new Socket(
-                        InetAddress.getByName(SERVER_IP), SERVER_PORT);
-
-                outToServer = new DataOutputStream(
-                        clientSocket.getOutputStream());
-
-                inFromServer = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
-
-                // WRITE TO SERVER AND RECEIVE MESSAGE
-                outToServer.writeBytes("Test");
-                fromServ = inFromServer.readLine();
-                clientSocket.close();
-
-            } catch (Exception e) {
-                System.out.println("\nCONNECTION ERROR");
-            }
-        }
-    }
-
-    /**
      * Server thread.
      */
-    class TCPServerThread implements Runnable {
+    class OpenIGTServerThread implements Runnable {
 
         @Override
         public void run() {
