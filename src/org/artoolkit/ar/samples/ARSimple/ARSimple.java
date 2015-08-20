@@ -19,9 +19,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 
 /**
  * Runs WINSS application.
@@ -55,7 +55,6 @@ public class ARSimple extends ARActivity {
      */
     private ServerSocket servSock;
 
-    // MODIFY IP AND PORT HERE
     /**
      * Server port.
      */
@@ -69,6 +68,8 @@ public class ARSimple extends ARActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        
+        // Constructor from superclass and get layout elements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -106,7 +107,7 @@ public class ARSimple extends ARActivity {
      */
     @Override
     protected ARRenderer supplyRenderer() {
-        return new SimpleRenderer();
+        return new SimpleRenderer(this);
     }
 
     /**

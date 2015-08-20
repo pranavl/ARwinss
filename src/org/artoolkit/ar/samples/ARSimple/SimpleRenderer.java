@@ -5,17 +5,17 @@
 package org.artoolkit.ar.samples.ARSimple;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
+import org.artoolkit.ar.base.ARActivity;
 
 import org.artoolkit.ar.base.ARToolKit;
-import org.artoolkit.ar.base.readers.STLReader;
 import org.artoolkit.ar.base.rendering.ARRenderer;
 import org.artoolkit.ar.base.rendering.Cube;
 import org.artoolkit.ar.base.rendering.Pyramid;
 import org.artoolkit.ar.base.rendering.STLSurface;
-import org.artoolkit.ar.base.rendering.Shape;
 
 /**
  * A renderer that adds a marker and draws an object on it.
@@ -32,15 +32,34 @@ public class SimpleRenderer extends ARRenderer {
     /**
      * Cube visualization.
      */
-    private Cube cube = new Cube(60.0f, 80.0f, 0.0f, 30.0f);
+    private Cube cube = new Cube(60.0f, 0.0f, 0.0f, 30.0f);
 
     /**
      * Pyramid visualization.
      */
     private Pyramid pyr = new Pyramid(40.0f, 0.0f, 0.0f, 0.0f, 10.0f, 10.0f);
 
+    /**
+     * STL Surface model.
+     */
     private STLSurface sur;
 
+    /**
+     * ARActivity class that creates this renderer.
+     */
+    private ARActivity activity;
+
+    // CONSTRUCTOR =============================================================
+    /**
+     * Constructor for SimpleRenderer.
+     *
+     * @param a ARActivity that calls it.
+     */
+    public SimpleRenderer(ARActivity a) {
+        this.activity = a;
+    }
+
+    // METHODS =================================================================
     /**
      * Markers can be configured here.
      *
@@ -55,13 +74,15 @@ public class SimpleRenderer extends ARRenderer {
                 "single;Data/multi/patt.d;80");
         markerA = ARToolKit.getInstance().addMarker(
                 "single;Data/multi/patt.a;80");
-
         //pyr.rotateX((float) (Math.PI / 2));
         //pyr.translate(0.0f, -155.0f, 0.0f);
+
         try {
-            sur = new STLSurface("test.stl");
+            InputStream is = this.activity.getAssets().open("test.stl");
+            this.sur = new STLSurface(is);
         } catch (IOException ex) {
-            cube.translate(-80.0f, 0.0f, 0.0f);
+            Logger.getLogger(
+                    SimpleRenderer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (markerHiro < 0 || markerD < 0 || markerA < 0) {
@@ -94,12 +115,11 @@ public class SimpleRenderer extends ARRenderer {
             gl.glMatrixMode(GL10.GL_MODELVIEW);
             gl.glLoadMatrixf(ARToolKit.getInstance().
                     queryMarkerTransformation(markerA), 0);
-            cube.draw(gl);
-//            try {
-//                sur.draw(gl);
-//            } catch (Exception e) {
-//                cube.draw(gl);
-//            }
+            try {
+                sur.draw(gl);
+            } catch (Exception e) {
+                cube.draw(gl);
+            }
         }
 //        if (ARToolKit.getInstance().queryMarkerVisible(markerHiro)) {
 //            gl.glMatrixMode(GL10.GL_MODELVIEW);
