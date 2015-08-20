@@ -50,6 +50,9 @@ public class ARSimple extends ARActivity {
      */
     Thread serverThread = null;
 
+    /**
+     * Socket for server.
+     */
     private ServerSocket servSock;
 
     // MODIFY IP AND PORT HERE
