@@ -22,12 +22,72 @@ The Android version of the ARToolKit SDK is implemented using a Java wrapper aro
 The application was built and tested on the [Epson Moverio BT-200 smart glasses](http://www.epson.com/cgi-bin/Store/jsp/Landing/moverio-bt-200-smart-glasses.do?ref=van_moverio_2014).
 
 ##Code Example
+This application provides an example to track markers, render shapes with respect to these tracked positions, 
+and transfer tranformation matrices via the OpenIGTLink protocol.
 
+####`ARTracker`
+The `ARTracker` activity is the main activity of this application. Here, UI changes can be made and threads are called. 
+`ARTracker` contains an instance of the `TrackerRenderer` class, which is used to track specified markers and render models with respect to these markers.
+
+####`TrackerRenderer`
+The `TrackerRenderer` class is contains the methods necessary to configure an AR scene, where markers are tracked and models are rendered with respect to those markers.
+This class is constructed with a reference to the `ARActivity` that created it, in this case `ARTracker`, to allow access to certain Activity-level methods.
+Most important in this case is access to the `assets` folder, used to initalize markers and create models.
+
+**Setting up new markers:**
+```java
+private int markerA = -1;
+
+@Override
+public boolean configureARScene() {
+	markerA = ARToolKit.getInstance().addMarker("single;Data/multi/patt.a;80");
+	return markerA >= 0;
+}	
+```
+Here, `Data/multi/patt.a` is the filepath of the marker configuration, and `80` is the given size of the marker.
+
+**Creating STL models from a file:**
+```java
+InputStream is = this.activity.getAssets().open("stl_file.stl");
+STLSurface sur = new STLSurface(is);
+```
+Here, `this.activity` is a reference to the `ARTracker` activity that created this `TrackerRenderer`.
+
+**Rendering objects with respect to a marker:**
+```java
+@Override
+public void draw(GL10 gl) {
+
+    gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+    // Apply the ARToolKit projection matrix
+    gl.glMatrixMode(GL10.GL_PROJECTION);
+    gl.glLoadMatrixf(ARToolKit.getInstance().getProjectionMatrix(), 0);
+
+	// Settings -- typically don't change
+    gl.glEnable(GL10.GL_CULL_FACE);
+    gl.glShadeModel(GL10.GL_SMOOTH);
+    gl.glEnable(GL10.GL_DEPTH_TEST);
+    gl.glFrontFace(GL10.GL_CW);
+
+    // If the marker is visible, render the model
+    if (ARToolKit.getInstance().queryMarkerVisible(markerA)) {
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glLoadMatrixf(ARToolKit.getInstance().
+                queryMarkerTransformation(markerA), 0);
+        sur.draw(gl)
+    }
+}	
+```
+It is possible to track multiple markers by repeating the `if-statement` with different markers and models.
 
 ##API Reference
+The ARToolKit library can be found at http://artoolkit.org/ with the [original documentation](http://artoolkit.org/documentation/).
+All code in this library is documented in `Javadoc` format.
 
 ####ARToolKit
 This project makes use of a [modified version of the ARToolKit Augmented Reality Library](https://github.com/pranavl/ARwinss). 
+
 The original library can be found at http://artoolkit.org/ with the [original documentation](http://artoolkit.org/documentation/).
 
 ####OpenIGTLink
