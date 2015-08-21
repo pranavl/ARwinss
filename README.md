@@ -94,6 +94,8 @@ This project also uses the [OpenIGTLink protocol](http://openigtlink.org/),
 specifically, the [Java implementation](https://code.google.com/p/igtlink4j/) of this library (Copyright (c) 2010, Absynt Technologies).
 The source was compiled into `JOpenIGT.jar` for use as a class library in the project.
 
+*Note:* Android does not support use of JAR's compiled with Java 1.8. To use this library, the Java source must be compiled using JDK 7.
+
 ##Contributors
 This project was made possible with support from Dr. Peter Kazanzides and Dr. Sungmin Kim
 of the Laboratory of Computational Sensing and Robotics at Johns Hopkins University.
