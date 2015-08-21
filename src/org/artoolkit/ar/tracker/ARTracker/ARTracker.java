@@ -77,7 +77,11 @@ public class ARTracker extends ARActivity {
         } catch (IOException ex) {
             startButton.setText("Socket Error");
         }
-        serverThread = new Thread(new OpenIGTServerThread(this.servSock, this));
+        
+        if (serverThread == null) {
+            serverThread = 
+                    new Thread(new OpenIGTServerThread(this.servSock, this)); 
+        }
 
         // Display IP Address of device to which clients can connect
         this.txtStat = (TextView) findViewById(R.id.txt_IPAddress);
@@ -92,6 +96,7 @@ public class ARTracker extends ARActivity {
                     public void onClick(View v) {
                         // Start server
                         serverThread.start();
+                        //startButton.setEnabled(false);
                     }
                 }
         );

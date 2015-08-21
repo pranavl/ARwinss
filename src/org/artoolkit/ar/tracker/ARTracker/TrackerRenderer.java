@@ -82,6 +82,7 @@ public class TrackerRenderer extends ARRenderer {
         // TRANSFORMATIONS so pyramid can be at tip of Kanji marker pointer
         //pyr.rotateX((float) (Math.PI / 2));
         //pyr.translate(0.0f, -155.0f, 0.0f);
+        
         try {
             InputStream is = this.activity.getAssets().open("Artery.stl");
             this.sur = new STLSurface(is);

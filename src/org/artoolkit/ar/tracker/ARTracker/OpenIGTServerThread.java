@@ -45,42 +45,31 @@ public class OpenIGTServerThread implements Runnable {
     public void run() {
 
         String a = "patt.a";
-        StringMessage m = new StringMessage(a, 
+        StringMessage m = new StringMessage(a,
                 Arrays.toString(this.activity.getRenderer().get(a)));
         byte[] mess = m.PackBody();
         System.out.println(mess.length);
 
         try {
-            Socket clntSock = servSock.accept();
-            System.out.println("Recieved connection from: "
-                    + clntSock.getInetAddress()
-                    + ":"
-                    + clntSock.getLocalPort());
-            InputStream is = clntSock.getInputStream();
+            while (true) {
+                Socket clntSock = servSock.accept();
+                System.out.println("Recieved connection from: "
+                        + clntSock.getInetAddress()
+                        + ":"
+                        + clntSock.getLocalPort());
+                InputStream is = clntSock.getInputStream();
 
-            is.read();
-            DataOutputStream outToClient = new DataOutputStream(
-                    clntSock.getOutputStream());
-            outToClient.write(mess);
-            outToClient.flush();
-            outToClient.close();
+                is.read();
+                DataOutputStream outToClient = new DataOutputStream(
+                        clntSock.getOutputStream());
+                outToClient.write(mess);
+                outToClient.flush();
+                outToClient.close();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        try {
-            Socket clntSock = servSock.accept();
-            BufferedReader inFromClient = new BufferedReader(
-                    new InputStreamReader(clntSock.getInputStream()));
-            DataOutputStream outToClient = new DataOutputStream(
-                    clntSock.getOutputStream());
-            inFromClient.readLine();
-            outToClient.writeBytes("RECEIVED");
-            outToClient.flush();
-            outToClient.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
 }
