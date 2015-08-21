@@ -32,9 +32,10 @@ public class OpenIGTServerThread implements Runnable {
     private ARTracker activity;
 
     /**
-     * Constructor for
+     * Constructor for Server Thread.
      *
-     * @param sock
+     * @param sock socket being used
+     * @param a ARTracker that created this thread
      */
     public OpenIGTServerThread(ServerSocket sock, ARTracker a) {
         this.servSock = sock;
@@ -44,22 +45,19 @@ public class OpenIGTServerThread implements Runnable {
     @Override
     public void run() {
 
-        String a = "patt.a";
-        StringMessage m = new StringMessage(a,
-                Arrays.toString(this.activity.getRenderer().get(a)));
-        byte[] mess = m.PackBody();
-        System.out.println(mess.length);
-
         try {
             while (true) {
                 Socket clntSock = servSock.accept();
-                System.out.println("Recieved connection from: "
-                        + clntSock.getInetAddress()
-                        + ":"
-                        + clntSock.getLocalPort());
-                InputStream is = clntSock.getInputStream();
 
+                InputStream is = clntSock.getInputStream();
                 is.read();
+                
+                String a = "patt.a";
+                StringMessage m = new StringMessage(a,
+                        Arrays.toString(this.activity.getRenderer().get(a)));
+                byte[] mess = m.PackBody();
+                System.out.println(mess.length);
+
                 DataOutputStream outToClient = new DataOutputStream(
                         clntSock.getOutputStream());
                 outToClient.write(mess);

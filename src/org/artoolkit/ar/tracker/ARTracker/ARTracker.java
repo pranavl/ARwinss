@@ -33,9 +33,14 @@ public class ARTracker extends ARActivity {
     private TextView txtStat;
 
     /**
-     * Send button.
+     * Start button.
      */
     private Button startButton;
+    
+    /**
+     * Stop button.
+     */
+    private Button stopButton;
 
     // OBJECTS AND VARIABLES ===================================================
     /**
@@ -88,15 +93,30 @@ public class ARTracker extends ARActivity {
         this.txtStat.setText("Server settings - "
                 + getIPAddress() + ":" + this.SERVER_PORT);
 
-        // Event listener to the Send button
-        this.startButton = (Button) findViewById(R.id.btn_send);
+        // Event listener to the Start button
+        this.startButton = (Button) findViewById(R.id.btn_start);
         this.startButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // Start server
+                        startButton.setEnabled(false);
+                        stopButton.setEnabled(true);
                         serverThread.start();
-                        //startButton.setEnabled(false);
+                    }
+                }
+        );
+        
+        // Event listener to the Stop button
+        this.stopButton = (Button) findViewById(R.id.btn_stop);
+        this.stopButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start server
+                        startButton.setEnabled(true);
+                        stopButton.setEnabled(false);
+                        serverThread.interrupt();
                     }
                 }
         );
