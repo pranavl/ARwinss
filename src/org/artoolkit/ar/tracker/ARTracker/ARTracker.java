@@ -39,11 +39,6 @@ public class ARTracker extends ARActivity {
 
     // OBJECTS AND VARIABLES ===================================================
     /**
-     * Thread for client.
-     */
-    Thread clientThread = null;
-
-    /**
      * Thread for server.
      */
     Thread serverThread = null;
@@ -57,6 +52,11 @@ public class ARTracker extends ARActivity {
      * Server port.
      */
     final int SERVER_PORT = 8099;
+    
+    /**
+     * TrackerRenderer object.
+     */
+    private TrackerRenderer ren;
 
     // METHODS =================================================================
     /**
@@ -66,22 +66,23 @@ public class ARTracker extends ARActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
+
         // Constructor from superclass and get layout elements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // Set up server socket
+        // Set up server socket and server thread
         try {
             this.servSock = new ServerSocket(this.SERVER_PORT);
         } catch (IOException ex) {
             startButton.setText("Socket Error");
         }
+        serverThread = new Thread(new OpenIGTServerThread(this.servSock, this));
 
         // Display IP Address of device to which clients can connect
         this.txtStat = (TextView) findViewById(R.id.txt_IPAddress);
-        this.txtStat.setText("Device IP Address: "
-                + getIPAddress());
+        this.txtStat.setText("Server settings - "
+                + getIPAddress() + ":" + this.SERVER_PORT);
 
         // Event listener to the Send button
         this.startButton = (Button) findViewById(R.id.btn_send);
@@ -90,7 +91,6 @@ public class ARTracker extends ARActivity {
                     @Override
                     public void onClick(View v) {
                         // Start server
-                        serverThread = new Thread(new OpenIGTServerThread());
                         serverThread.start();
                     }
                 }
@@ -105,7 +105,8 @@ public class ARTracker extends ARActivity {
      */
     @Override
     protected ARRenderer supplyRenderer() {
-        return new TrackerRenderer(this);
+        this.ren = new TrackerRenderer(this);
+        return this.ren;
     }
 
     /**
@@ -120,6 +121,15 @@ public class ARTracker extends ARActivity {
     }
 
     /**
+     * Accessor for TrackerRenderer object.
+     * 
+     * @return the TrackerRenderer associated with this activity
+     */
+    public TrackerRenderer getRenderer() {
+        return this.ren;
+    }
+    
+    /**
      * Provide IP Address of the device.
      *
      * @return IP address as a String
@@ -128,28 +138,5 @@ public class ARTracker extends ARActivity {
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         return Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
     }
-
-// THREADS =====================================================================
-    /**
-     * Server thread.
-     */
-    class OpenIGTServerThread implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                Socket clntSock = servSock.accept();
-                BufferedReader inFromClient = new BufferedReader(
-                        new InputStreamReader(clntSock.getInputStream()));
-                DataOutputStream outToClient = new DataOutputStream(
-                        clntSock.getOutputStream());
-                inFromClient.readLine();
-                outToClient.writeBytes("RECEIVED");
-                outToClient.flush();
-                outToClient.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
+    
 }
