@@ -82,8 +82,7 @@ public void draw(GL10 gl) {
 It is possible to track multiple markers by repeating the `if-statement` with different markers and models.
 
 ##API Reference
-The ARToolKit library can be found at http://artoolkit.org/ with the [original documentation](http://artoolkit.org/documentation/).
-All code in this library is documented in `Javadoc` format.
+All code added to these libraries is documented in `Javadoc` format.
 
 ####ARToolKit
 This project makes use of a [modified version of the ARToolKit Augmented Reality Library](https://github.com/pranavl/ARwinss). 

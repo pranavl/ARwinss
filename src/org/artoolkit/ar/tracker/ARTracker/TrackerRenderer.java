@@ -1,6 +1,7 @@
-/*
- *  TrackerRenderer.java
- *  ARToolKit5
+/**
+ * TrackerRenderer.java
+ *
+ * @author Pranav Lakshminarayanan
  */
 package org.artoolkit.ar.tracker.ARTracker;
 
@@ -78,7 +79,7 @@ public class TrackerRenderer extends ARRenderer {
         //pyr.translate(0.0f, -155.0f, 0.0f);
 
         try {
-            InputStream is = this.activity.getAssets().open("test.stl");
+            InputStream is = this.activity.getAssets().open("Artery.stl");
             this.sur = new STLSurface(is);
         } catch (IOException ex) {
             Logger.getLogger(TrackerRenderer.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,8 +1,7 @@
-/*
- *  ARTracker.java
+/**
+ * ARTracker.java
  *
- *  @author Pranav Lakshminarayanan
- *
+ * @author Pranav Lakshminarayanan
  */
 package org.artoolkit.ar.tracker.ARTracker;
 
