@@ -24,8 +24,6 @@ import org.artoolkit.ar.base.rendering.STLSurface;
  */
 public class TrackerRenderer extends ARRenderer {
 
-    public final String proj = "projection";
-    
     /**
      * Markers.
      */
@@ -76,8 +74,6 @@ public class TrackerRenderer extends ARRenderer {
      */
     @Override
     public boolean configureARScene() {
-        
-        this.data.put(proj, new float[1]);
 
         markerHiro = configureMarker("single;Data/patt.hiro;80", "patt.hiro");
         markerD = configureMarker("single;Data/multi/patt.d;80", "patt.d");
@@ -154,13 +150,6 @@ public class TrackerRenderer extends ARRenderer {
         return this.data.get(k);
     }
 
-    /**
-     * Configure markers and store the key in the data HashMap.
-     * 
-     * @param path file path to marker pattern
-     * @param key key for marker in HashMap
-     * @return integer corresponding to marker, >0 if configured properly
-     */
     private int configureMarker(String path, String key) {
         this.data.put(key, new float[1]);
         return ARToolKit.getInstance().addMarker(path);

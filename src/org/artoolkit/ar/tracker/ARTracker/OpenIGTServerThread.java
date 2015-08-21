@@ -43,14 +43,22 @@ public class OpenIGTServerThread implements Runnable {
 
     @Override
     public void run() {
+
+        String a = "patt.a";
+        StringMessage m = new StringMessage(a, 
+                Arrays.toString(this.activity.getRenderer().get(a)));
+        byte[] mess = m.PackBody();
+        System.out.println(mess.length);
+
         try {
             Socket clntSock = servSock.accept();
+            System.out.println("Recieved connection from: "
+                    + clntSock.getInetAddress()
+                    + ":"
+                    + clntSock.getLocalPort());
             InputStream is = clntSock.getInputStream();
+
             is.read();
-//            BufferedReader inFromClient
-//                    = new BufferedReader(new InputStreamReader(is));
-//            String a = inFromClient.readLine();
-            byte[] mess = parseForMessage("patt.a");
             DataOutputStream outToClient = new DataOutputStream(
                     clntSock.getOutputStream());
             outToClient.write(mess);
@@ -59,24 +67,20 @@ public class OpenIGTServerThread implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
 
-    /**
-     * Parse input for appropriate output.
-     *
-     * @param a
-     * @return byte array for message to be sent
-     */
-    private byte[] parseForMessage(String a) {
-        String message = Arrays.toString(this.activity.getRenderer().get(a));
-        if (message == null) {
-            message = a + " not valid";
-        } else if (message.equals("[0.0]")) {
-            message = a + " not found";
+        try {
+            Socket clntSock = servSock.accept();
+            BufferedReader inFromClient = new BufferedReader(
+                    new InputStreamReader(clntSock.getInputStream()));
+            DataOutputStream outToClient = new DataOutputStream(
+                    clntSock.getOutputStream());
+            inFromClient.readLine();
+            outToClient.writeBytes("RECEIVED");
+            outToClient.flush();
+            outToClient.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        StringMessage m = new StringMessage(a, message);
-        return m.PackBody();
-
     }
 
 }
