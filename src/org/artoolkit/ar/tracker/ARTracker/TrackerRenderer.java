@@ -126,12 +126,15 @@ public class TrackerRenderer extends ARRenderer {
             this.data.put("patt.a", ARToolKit.getInstance().
                     queryMarkerTransformation(markerA));
         }
-//        if (ARToolKit.getInstance().queryMarkerVisible(markerHiro)) {
-//            gl.glMatrixMode(GL10.GL_MODELVIEW);
-//            gl.glLoadMatrixf(ARToolKit.getInstance().
-//                    queryMarkerTransformation(markerHiro), 0);
-//            sur.draw(gl);
-//        }
+        
+        if (ARToolKit.getInstance().queryMarkerVisible(markerD)) {
+            gl.glMatrixMode(GL10.GL_MODELVIEW);
+            gl.glLoadMatrixf(ARToolKit.getInstance().
+                    queryMarkerTransformation(markerD), 0);
+            sur.draw(gl);
+            this.data.put("patt.d", ARToolKit.getInstance().
+                    queryMarkerTransformation(markerD));
+        }
 
 //        if (ARToolKit.getInstance().queryMarkerVisible(markerKanji)) {
 //            gl.glMatrixMode(GL10.GL_MODELVIEW);

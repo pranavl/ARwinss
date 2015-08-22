@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Runs WINSS application.
@@ -100,26 +102,30 @@ public class ARTracker extends ARActivity {
                     @Override
                     public void onClick(View v) {
                         // Start server
-                        startButton.setEnabled(false);
-                        stopButton.setEnabled(true);
+                        //startButton.setEnabled(false);
+                        //stopButton.setEnabled(true);
                         serverThread.start();
                     }
                 }
         );
         
         // Event listener to the Stop button
-        this.stopButton = (Button) findViewById(R.id.btn_stop);
-        this.stopButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start server
-                        startButton.setEnabled(true);
-                        stopButton.setEnabled(false);
-                        serverThread.interrupt();
-                    }
-                }
-        );
+//        this.stopButton = (Button) findViewById(R.id.btn_stop);
+//        this.stopButton.setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Start server
+//                        startButton.setEnabled(true);
+//                        stopButton.setEnabled(false);
+////                        try {
+////                            servSock.close();
+////                        } catch (IOException ex) {
+////                            Logger.getLogger(ARTracker.class.getName()).log(Level.SEVERE, null, ex);
+////                        }
+//                    }
+//                }
+//        );
 
     }
 

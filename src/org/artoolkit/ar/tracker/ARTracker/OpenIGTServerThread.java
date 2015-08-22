@@ -6,6 +6,8 @@
 package org.artoolkit.ar.tracker.ARTracker;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,11 +50,13 @@ public class OpenIGTServerThread implements Runnable {
         try {
             while (true) {
                 Socket clntSock = servSock.accept();
-
                 InputStream is = clntSock.getInputStream();
-                is.read();
-                
-                String a = "patt.a";
+                //is.read();
+                DataInputStream input = new DataInputStream(is);
+                byte[] barr = readToByteArray(input);
+                String a = new String(barr);
+
+                //String a = "patt.a";
                 StringMessage m = new StringMessage(a,
                         Arrays.toString(this.activity.getRenderer().get(a)));
                 byte[] mess = m.PackBody();
@@ -68,6 +72,26 @@ public class OpenIGTServerThread implements Runnable {
             ex.printStackTrace();
         }
 
+    }
+    
+    private static byte[] readToByteArray(DataInputStream is) throws IOException {
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int nRead;
+        byte[] data = new byte[1];
+
+        while ((nRead = is.read(data)) != -1) {
+            if (data[0] == (byte)0x00) {
+                break;
+            }
+                
+            buffer.write(data, 0, nRead);
+        }
+
+        buffer.flush();
+
+        return buffer.toByteArray();
     }
 
 }
