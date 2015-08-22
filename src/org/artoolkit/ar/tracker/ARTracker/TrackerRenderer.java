@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
-import org.artoolkit.ar.base.ARActivity;
 
 import org.artoolkit.ar.base.ARToolKit;
 import org.artoolkit.ar.base.rendering.ARRenderer;
@@ -20,10 +19,12 @@ import org.artoolkit.ar.base.rendering.Pyramid;
 import org.artoolkit.ar.base.rendering.STLSurface;
 
 /**
- * A renderer that adds a marker and draws an object on it.
+ * A renderer that tracks markers
+ *  and renders surfaces relative to the marker position.
  */
 public class TrackerRenderer extends ARRenderer {
 
+    // MARKERS AND SURFACES ====================================================
     /**
      * Markers.
      */
@@ -46,6 +47,7 @@ public class TrackerRenderer extends ARRenderer {
      */
     private STLSurface sur;
 
+    // VARIABLES ===============================================================
     /**
      * ARActivity class that creates this renderer.
      */
@@ -110,7 +112,8 @@ public class TrackerRenderer extends ARRenderer {
         // Apply the ARToolKit projection matrix
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadMatrixf(ARToolKit.getInstance().getProjectionMatrix(), 0);
-        this.data.put("PROJECTION", ARToolKit.getInstance().getProjectionMatrix());
+        this.data.put("PROJECTION", 
+                ARToolKit.getInstance().getProjectionMatrix());
 
         gl.glEnable(GL10.GL_CULL_FACE);
         gl.glShadeModel(GL10.GL_SMOOTH);
@@ -136,12 +139,6 @@ public class TrackerRenderer extends ARRenderer {
                     queryMarkerTransformation(markerD));
         }
 
-//        if (ARToolKit.getInstance().queryMarkerVisible(markerKanji)) {
-//            gl.glMatrixMode(GL10.GL_MODELVIEW);
-//            gl.glLoadMatrixf(ARToolKit.getInstance().
-//                    queryMarkerTransformation(markerKanji), 0);
-//            pyr.draw(gl);
-//        }
     }
 
     /**
@@ -154,6 +151,13 @@ public class TrackerRenderer extends ARRenderer {
         return this.data.get(k);
     }
 
+    /**
+     * Configure markers for tracking.
+     * 
+     * @param path file path for marker
+     * @param key key associated with marker
+     * @return integer > 0 if marker is configured properly
+     */
     private int configureMarker(String path, String key) {
         this.data.put(key, new float[1]);
         return ARToolKit.getInstance().addMarker(path);
