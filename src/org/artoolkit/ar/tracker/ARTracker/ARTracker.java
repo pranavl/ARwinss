@@ -33,11 +33,6 @@ public class ARTracker extends ARActivity {
      */
     private Button startButton;
     
-    /**
-     * Stop button.
-     */
-    private Button stopButton;
-
     // OBJECTS AND VARIABLES ===================================================
     /**
      * Thread for server.
@@ -96,31 +91,11 @@ public class ARTracker extends ARActivity {
                     @Override
                     public void onClick(View v) {
                         // Start server
-                        //startButton.setEnabled(false);
-                        //stopButton.setEnabled(true);
                         serverThread.start();
                     }
                 }
         );
         
-        // Event listener to the Stop button
-//        this.stopButton = (Button) findViewById(R.id.btn_stop);
-//        this.stopButton.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        // Start server
-//                        startButton.setEnabled(true);
-//                        stopButton.setEnabled(false);
-////                        try {
-////                            servSock.close();
-////                        } catch (IOException ex) {
-////                            Logger.getLogger(ARTracker.class.getName()).log(Level.SEVERE, null, ex);
-////                        }
-//                    }
-//                }
-//        );
-
     }
 
     /**

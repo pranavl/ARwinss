@@ -19,13 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
         />
-        <Button
-            android:id="@+id/btn_stop"
-            android:text="Stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-        />
     </TableRow>
     
     <TableRow android:layout_weight="1">

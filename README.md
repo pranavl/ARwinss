@@ -29,22 +29,26 @@ and transfer tranformation matrices via the OpenIGTLink protocol.
 The `ARTracker` activity is the main activity of this application. Here, UI changes can be made and threads are called. 
 `ARTracker` contains an instance of the `TrackerRenderer` class, which is used to track specified markers and render models with respect to these markers.
 
+The main layout of the app includes:
+* Description of server settings (IP and port)
+* Button to start server
+* Camera view where models are rendered with respect to tracked markers
+
 ####`TrackerRenderer`
-The `TrackerRenderer` class is contains the methods necessary to configure an AR scene, where markers are tracked and models are rendered with respect to those markers.
+The `TrackerRenderer` class contains the methods necessary to configure an AR scene, where markers are tracked and models are rendered with respect to those markers.
 This class is constructed with a reference to the `ARActivity` that created it, in this case `ARTracker`, to allow access to certain Activity-level methods.
 Most important in this case is access to the `assets` folder, used to initalize markers and create models.
 
+The `data` field is a `HashMap<String, float[]>` storing the frame transformations associated with each tracked marker. 
+The `float[]`s are accessible through the the `TrackerRenderer`'s `get(String k)` method.
+In addition to storing transformation data for each marker, the projection matrix is also stored, accessible with the key, `PROJ`.
+
 **Setting up new markers:**
 ```java
-private int markerA = -1;
-
-@Override
-public boolean configureARScene() {
-	markerA = ARToolKit.getInstance().addMarker("single;Data/multi/patt.a;80");
-	return markerA >= 0;
-}	
+markerA = configureMarker("single;Data/multi/patt.a;80", "patt.a");	
 ```
 Here, `Data/multi/patt.a` is the filepath of the marker configuration, and `80` is the given size of the marker.
+The second parameter, `patt.a`, corresponds to the key used to store the frame data in the `data` field of `TrackerRenderer`.
 
 **Creating STL models from a file:**
 ```java
@@ -63,8 +67,9 @@ public void draw(GL10 gl) {
     // Apply the ARToolKit projection matrix
     gl.glMatrixMode(GL10.GL_PROJECTION);
     gl.glLoadMatrixf(ARToolKit.getInstance().getProjectionMatrix(), 0);
+    this.data.put("PROJECTION", 
+            ARToolKit.getInstance().getProjectionMatrix());
 
-	// Settings -- typically don't change
     gl.glEnable(GL10.GL_CULL_FACE);
     gl.glShadeModel(GL10.GL_SMOOTH);
     gl.glEnable(GL10.GL_DEPTH_TEST);
@@ -75,11 +80,25 @@ public void draw(GL10 gl) {
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadMatrixf(ARToolKit.getInstance().
                 queryMarkerTransformation(markerA), 0);
-        sur.draw(gl)
+        sur.draw(gl);
+        this.data.put("patt.a", ARToolKit.getInstance().
+                queryMarkerTransformation(markerA));
     }
-}	
+}
 ```
 It is possible to track multiple markers by repeating the `if-statement` with different markers and models.
+
+####`OpenIGTServerThread`
+The `OpenIGTServerThread` class runs a separate thread to transfer data to a client via the OpenIGTLink protocol.
+Based on the input received from the client, the server thread will access corresponding data from the `TrackerRenderer`'s `data` field.
+
+For example:
+```java
+String a = 'patt.a';
+StringMessage m = new StringMessage(a, Arrays.toString(this.activity.getRenderer().get(a)));
+```
+creates a `StringMessage` according to OpenIGTLink protocol with the data corresponding to `markerA`. 
+This data is then sent back to the client, who receives and decodes the message.
 
 ##API Reference
 All code added to these libraries is documented in `Javadoc` format.

@@ -2,7 +2,6 @@
  * OpenIGTServerThread.java
  * 
  * @author Pranav Lakshminarayanan
- * 
  */
 package org.artoolkit.ar.tracker.ARTracker;
 

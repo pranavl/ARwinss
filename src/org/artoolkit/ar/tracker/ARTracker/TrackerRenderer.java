@@ -112,7 +112,7 @@ public class TrackerRenderer extends ARRenderer {
         // Apply the ARToolKit projection matrix
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadMatrixf(ARToolKit.getInstance().getProjectionMatrix(), 0);
-        this.data.put("PROJECTION", 
+        this.data.put("PROJ", 
                 ARToolKit.getInstance().getProjectionMatrix());
 
         gl.glEnable(GL10.GL_CULL_FACE);
