@@ -31,6 +31,7 @@ public class TrackerRenderer extends ARRenderer {
     private int markerHiro = -1;
     private int markerD = -1;
     private int markerA = -1;
+    private int markerKanji = -1;
 
     /**
      * Sample cube visualization.
@@ -80,10 +81,12 @@ public class TrackerRenderer extends ARRenderer {
         markerHiro = configureMarker("single;Data/patt.hiro;80", "patt.hiro");
         markerD = configureMarker("single;Data/multi/patt.d;80", "patt.d");
         markerA = configureMarker("single;Data/multi/patt.a;80", "patt.a");
+        markerKanji 
+                = configureMarker("single;Data/patt.kanji;80", "patt.kanji");
 
         // TRANSFORMATIONS so pyramid can be at tip of Kanji marker pointer
-        //pyr.rotateX((float) (Math.PI / 2));
-        //pyr.translate(0.0f, -155.0f, 0.0f);
+        pyr.rotateX((float) (Math.PI / 2));
+        pyr.translate(0.0f, -155.0f, 0.0f);
         
         try {
             InputStream is = this.activity.getAssets().open("Artery.stl");
@@ -137,6 +140,15 @@ public class TrackerRenderer extends ARRenderer {
             sur.draw(gl);
             this.data.put("patt.d", ARToolKit.getInstance().
                     queryMarkerTransformation(markerD));
+        }
+
+        if (ARToolKit.getInstance().queryMarkerVisible(markerKanji)) {
+            gl.glMatrixMode(GL10.GL_MODELVIEW);
+            gl.glLoadMatrixf(ARToolKit.getInstance().
+                    queryMarkerTransformation(markerKanji), 0);
+            pyr.draw(gl);
+            this.data.put("patt.kanji", ARToolKit.getInstance().
+                    queryMarkerTransformation(markerKanji));
         }
 
     }
